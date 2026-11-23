@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src https://w.soundcloud.com; img-src 'self' https://i1.sndcdn.com https://i2.sndcdn.com; style-src 'self'">
+<title>Roll the Dice</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="renderer/context-help.css"></head><body>
+<header class="app-header">
+  <div class="header-inner">
+    <img class="brand" src="assets/header.png" width="840" height="200" alt="Roll the Dice">
+    <span id="edition" class="edition" hidden></span>
+    <nav id="navigation" aria-label="Main navigation">
+      <button type="button" data-page="discover" aria-current="page">Discover</button>
+      <button type="button" data-page="favourites">Favourites</button>
+      <button type="button" data-page="charts">Charts</button>
+    </nav>
+    <button id="openGuide" class="text-button">Guide</button>
+    <button id="help" aria-label="Settings" title="Settings"><span aria-hidden="true">&#9881;</span> Settings</button>
+  </div>
+</header>
+<main id="appMain" data-page="discover">
+  <div class="controls" id="discoveryControls">
+    <label class="genre-control">Genre <select id="genre"></select></label>
+    <div class="dial"><label for="dial">Discovery</label><div class="slider-track"><input id="dial" type="range" min="0" max="100" value="20" aria-describedby="discoveryTaste discoverySurprise"><small><span id="discoveryTaste">More like my taste</span><span id="discoverySurprise">Surprise me</span></small></div></div>
+    <label class="fresh" title="Find tracks uploaded to SoundCloud within the past year, favouring the newest results.
+    Turn off to include older uploads. Upload date may differ from release date.">Fresh tunes <input id="fresh" type="checkbox" role="switch" aria-description="Find tracks uploaded to SoundCloud within the past year, favouring the newest results. 
+    Turn off to include older uploads. Upload date may differ from release date."></label>
+  </div>
+  <div class="workspace">
+    <div id="deckColumn">
+      <section class="panel deck" aria-label="Track player">
+        <div class="track-summary">
+          <div class="sleeve"><img id="art" hidden alt=""><div id="fallback"><img src="assets/logo.png" alt="" width="1254" height="1254"></div></div>
+          <div class="record">
+            <small id="artist">Roll the Dice</small>
+            <h1 id="track">Find your next tune.</h1>
+            <div id="trackBadges" class="track-badges" hidden><span id="trackGenre" class="badge" hidden></span><span id="freeDownload" class="badge badge-download" hidden>Free download</span></div>
+            <div class="track-feedback"><button id="favourite" hidden>Favourite artist</button><fieldset id="stars" hidden><legend class="sr-only">Your rating</legend></fieldset></div>
+            <div class="track-metadata"><p id="trackDate"></p><p id="trackKey"></p></div>
+          </div>
+        </div>
+        <iframe hidden id="player" title="SoundCloud waveform and playback" allow="autoplay; encrypted-media"></iframe>
+        <p id="playerStatus" role="status" hidden></p>
+        <div class="deck-actions actions">
+          <div class="actions"><button id="roll" class="primary">Roll the dice</button><button id="undo" disabled><span class="glyph" aria-hidden="true">&#8630;</span> Undo</button></div>
+          <div class="actions" id="trackTools" hidden><button id="similar"><span class="search-glyph" aria-hidden="true"></span> Find similar</button></div>
+          <div class="actions secondary-links" id="destinations" hidden><button id="soundCloudLink" title="Open SoundCloud track">SoundCloud <span aria-hidden="true">&#8599;</span></button><button id="copyLink">Copy track link</button></div>
+        </div>
+        <div class="status-row"><p id="status" role="status"></p><button id="retryRoll" hidden>Retry roll</button></div>
+      </section>
+      <section id="matches" class="panel" hidden><div class="card-head"><h2>Similar tracks</h2><p id="matchCount"></p></div><ol id="matchList" class="track-list"></ol></section>
+    </div>
+    <aside id="sidebar" aria-label="Discovery details">
+<section id="downloadAssistant" aria-labelledby="downloadTitle">
+  <h2 id="downloadTitle">Download assistant</h2>
+  <p id="downloadAvailability">Choose a track to see its download options.</p>
+  <div id="downloadContext" hidden>
+    <label id="downloadChoice" hidden>Download destination <select id="downloadDestination"></select></label>
+    <p id="downloadProvider"></p>
+    <p id="downloadRequirements">Check requirements on the download page.</p>
+    <div class="actions"><button id="openDownload" class="primary">Open download page</button><button id="copyEmail" hidden>Copy email</button><button id="copyComment" hidden>Copy comment</button></div>
+  </div>
+  <p id="downloadStatus" role="status"></p>
+  <details id="downloadDetails"><summary>My download details</summary>
+    <p>Details stay on this PC. Saving them does not send anything to an artist.</p>
+    <form id="downloadForm">
+      <label>DJ email (optional) <input id="mail" type="email" maxlength="254" autocomplete="email"></label>
+      <label>Comment (optional) <textarea id="comment" maxlength="300" rows="2"></textarea></label>
+      <div class="actions"><button type="submit">Save details</button><button id="clearEmail" type="button">Clear saved email</button></div>
+    </form>
+  </details>
+</section>
+      <div id="discoverFeed">
+        <section id="feedPanel" class="panel" aria-labelledby="feedTitle">
+          <div class="card-head"><h2 id="feedTitle">Latest from favourites</h2><button id="refreshFeed" class="text-button" title="Refresh favourite uploads"><span aria-hidden="true">&#8635;</span> Refresh</button></div>
+          <label id="feedFilter">Genre <select id="feedGenre"><option value="">All genres</option></select></label>
+          <p id="feedStatus" role="status"></p><p id="feedChecked"></p><ul id="feedArtists" class="feed-artists" hidden></ul><ul id="feedList" class="track-list"></ul>
+        </section>
+      </div>
+    </aside>
+    <section id="favouritesPage" class="navigation-page" aria-label="Favourites" hidden>
+      <div id="favouritesFeed"></div>
+      <section id="artistPanel" class="panel" aria-labelledby="artistTitle"><h2 id="artistTitle">Favourite artists</h2><ul id="artistList"></ul></section>
+    </section>
+    <section id="chartsPage" class="navigation-page" aria-label="Charts" hidden>
+<section id="chartPanel" class="panel" aria-labelledby="chartTitle">
+      <h1 id="chartTitle">Hypeddit charts</h1>
+  <div class="actions panel-controls"><label>Chart genre <select id="chartGenre"></select></label>
+  <button id="chartBack">Back</button><button id="openChart">Reload chart</button><button id="openChartExternal">Open chart in browser</button></div>
+  <p id="chartStatus" role="status"></p>
+  <div id="chartViewport" role="region" aria-label="Hypeddit chart viewer"></div>
+  <details id="chartAlternatives" hidden>
+    <summary>Recommended for you</summary>
+    <p>Tracks from your selected discovery genre and saved taste preferences.</p>
+    <button id="showRecommendations">Find recommendations</button>
+    <p id="recommendationStatus" role="status"></p><ul id="recommendationList" class="feed-list"></ul>
+  </details>
+</section>
+    </section>
+  </div>
+</main>
+<dialog id="analysisDialog" aria-labelledby="analysisTitle">
+  <h2 id="analysisTitle">Find similar</h2>
+  <p id="analysisStatus" role="status"></p>
+  <p id="analysisKey" hidden></p>
+  <div class="actions similar-options">
+    <label>Subgenre <select id="matchStyle"></select></label>
+    <label><input id="preferSameKey" type="checkbox"> Prefer compatible keys</label>
+    <label><input id="sameKeyOnly" type="checkbox"> Same key only</label>
+  </div>
+  <ol id="analysisResults" hidden></ol>
+  <progress id="analysisProgress" aria-label="Similar tracks search progress"></progress>
+  <div class="actions">
+    <button id="analysisKeep" hidden>Keep searching</button>
+    <button id="analysisCancel" autofocus>Cancel</button>
+    <button id="analysisRoll">Roll the Dice</button>
+  </div>
+</dialog>
+<dialog id="guide" aria-labelledby="guideTitle"><h2 id="guideTitle">Usage guide</h2>
+<ol>
+  <li><strong>Find a tune.</strong> Pick a genre, click <strong>Roll the dice</strong>, then press play on the SoundCloud waveform. Rate what you hear to shape future rolls.</li>
+  <li><strong>Download a tune you like.</strong> Use <strong>Download Assistant</strong> to open the artist's page and complete the download in your browser.</li>
+  <li id="similarGuide"><strong>Find tracks to mix with it.</strong> Choose a DJ subgenre and click <strong>Find similar</strong> to see suggestions based on listing details and your favourites. Use <strong>Same key only</strong> when you want a known key match.</li>
+</ol>
+<details>
+  <summary>Ratings, Discovery and Undo</summary>
+  <p>Use 1–5 stars to steer future picks. Five stars increases the chances of related tracks, three is neutral, and one reduces their chances. Move the Discovery slider towards Surprise me for more random picks. Use <strong>Undo</strong> to return to the previous track.</p>
+</details>
+<details id="similarGuideDetails">
+  <summary>How Find similar checks matches</summary>
+  <p>Suggestions use subgenre, listing details and your saved preferences. <strong>Prefer compatible keys</strong> gives a small boost to exact and nearby Camelot matches. Key labels show whether the source is the uploader or an audio estimate.</p>
+</details>
+<div class="guide-startup"><label><input id="hideGuideStartup" type="checkbox"> Do not show at startup</label><p>You can reopen this guide using the Guide button.</p></div>
+<p id="guideError" role="alert"></p><div class="actions"><button id="closeGuide" class="primary">Close guide</button></div></dialog>
+<dialog id="settingsDialog" aria-labelledby="settingsTitle">
+<h2 id="settingsTitle">Settings</h2>
+<section aria-labelledby="tasteTitle"><h3 id="tasteTitle">Your music taste</h3>
+<p>These preferences shape personalised discovery. They are separate from the artists you follow in Favourites.</p>
+<h4>Favourite genres</h4><p>Choose several to enable <strong>Mix my favourite genres</strong>. Your current discovery genre stays unchanged.</p>
+<div id="favourites"></div>
+<label class="artist-influences">Artist influences <input id="artists" placeholder="Artist names, separated by commas" maxlength="550" aria-describedby="artistInfluencesHint"></label>
+<p id="artistInfluencesHint">Up to eight artist names, separated by commas. These guide your taste preferences; they do not follow those artists.</p></section>
+<p id="settingsError" role="alert"></p><div class="actions settings-actions"><button id="finish" class="primary">Save settings</button><button id="closeSettings">Cancel</button></div>
+</dialog>
+<script src="similar.js"></script><script src="renderer/charts.js"></script><script src="renderer/download-assistant.js"></script><script src="renderer/navigation.js"></script><script src="renderer/settings.js"></script><script src="renderer/audio-capture.js"></script><script src="renderer/player-widget.js"></script><script src="renderer/collections.js"></script><script src="renderer/similarity.js"></script><script src="ui.js"></script><script src="renderer/context-help.js"></script></body></html>

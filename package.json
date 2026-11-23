@@ -1,0 +1,14 @@
+{
+  "name": "roll-the-dice",
+  "version": "1.0.0-beta",
+  "private": true,
+  "description": "A SoundCloud randomizer for DJ sets.",
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "build:installer": "node scripts/build-installer.cjs"
+  },
+  "devDependencies": {
+    "@electron/asar": "4.3.2",
+    "playwright-core": "1.65.1"
+  }
+}

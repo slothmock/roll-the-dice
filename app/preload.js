@@ -1,0 +1,37 @@
+const {contextBridge,ipcRenderer}=require('electron')
+const friendsBeta=process.argv.includes('--roll-dice-friends-beta')
+contextBridge.exposeInMainWorld('dice',{
+  friendsBeta,
+  guideStartup:show=>ipcRenderer.invoke('guideStartup',show),
+  profile:(genres,artists)=>ipcRenderer.invoke('profile',genres,artists),
+  ...(!friendsBeta&&{
+    similar:(url,style,revision,requestId,more,strict)=>ipcRenderer.invoke('similar',url,style,revision,requestId,more,strict),
+    onSimilarResults:listener=>ipcRenderer.on('similarResults',(_event,request,rows)=>listener(request,rows)),
+    cancelSimilar:requestId=>ipcRenderer.invoke('cancelSimilar',requestId),
+    savePlaybackKey:(url,key,revision)=>ipcRenderer.invoke('savePlaybackKey',url,key,revision),
+    listenMatch:url=>ipcRenderer.invoke('listenMatch',url)
+  }),
+  artistFavourites:()=>ipcRenderer.invoke('artistFavourites'),
+  toggleFavourite:url=>ipcRenderer.invoke('toggleFavourite',url),
+  removeFavourite:profile=>ipcRenderer.invoke('removeFavourite',profile),
+  favouriteUploads:(refresh,profile,requestId)=>ipcRenderer.invoke('favouriteUploads',refresh,profile,requestId),
+  onFavouriteUpdates:listener=>ipcRenderer.on('favouriteUpdates',(_event,id,result)=>listener(id,result)),
+  listenTrack:url=>ipcRenderer.invoke('listenTrack',url),
+  charts:()=>ipcRenderer.invoke('charts'),
+  getChartGenres:()=>ipcRenderer.invoke('getChartGenres'),
+  openChart:genre=>ipcRenderer.invoke('openChart',genre),
+  cancelChart:()=>ipcRenderer.invoke('cancelChart'),
+  setChartBounds:bounds=>ipcRenderer.invoke('setChartBounds',bounds),
+  chartBack:()=>ipcRenderer.invoke('chartBack'),
+  openChartExternal:genre=>ipcRenderer.invoke('openChartExternal',genre),
+  onChartNotice:listener=>ipcRenderer.on('chartNotice',(_event,message)=>listener(message)),
+  recommendations:()=>ipcRenderer.invoke('recommendations'),
+  dial:value=>ipcRenderer.invoke('dial',value),undo:()=>ipcRenderer.invoke('undo'),
+  rate:(url,stars)=>ipcRenderer.invoke('rate',url,stars),
+  copy:reaction=>ipcRenderer.invoke('copy',reaction),
+  setup:()=>ipcRenderer.invoke('setup'),roll:(genre,fresh)=>ipcRenderer.invoke('roll',genre,fresh),
+  prepareRoll:(genre,fresh)=>ipcRenderer.invoke('prepareRoll',genre,fresh),
+  gate:(url,destination)=>ipcRenderer.invoke('gate',url,destination),
+  saveDownloadDetails:(email,comment)=>ipcRenderer.invoke('saveDownloadDetails',email,comment),
+  clearDownloadEmail:()=>ipcRenderer.invoke('clearDownloadEmail')
+})

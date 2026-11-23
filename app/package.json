@@ -1,0 +1,9 @@
+{
+  "name": "roll-the-dice",
+  "version": "1.0.0-alpha",
+  "private": true,
+  "main": "main.js",
+  "description": "Discover music, rate tracks and follow favourite artists.",
+  "productName": "Roll the Dice",
+  "friendsBeta": true
+}
