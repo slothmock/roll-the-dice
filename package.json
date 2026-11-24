@@ -5,7 +5,8 @@
   "description": "A SoundCloud randomizer for DJ sets.",
   "scripts": {
     "build": "node scripts/build.cjs",
-    "build:installer": "node scripts/build-installer.cjs"
+    "build:installer": "node scripts/build-installer.cjs",
+    "build:linux": "node scripts/build-linux.cjs"
   },
   "devDependencies": {
     "@electron/asar": "4.3.2",

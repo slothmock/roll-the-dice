@@ -2,7 +2,7 @@
 
 **Discover electronic music. Rate what you hear. Refine what comes next.**
 
-Roll the Dice is a Windows desktop music-discovery app built with Electron. It helps electronic-music listeners find tracks on SoundCloud, explore genre-specific releases, and refine recommendations using their ratings and favourite artists.
+Roll the Dice is a desktop music-discovery app for Windows and Linux, built with Electron. It helps electronic-music listeners find tracks on SoundCloud, explore genre-specific releases, and refine recommendations using their ratings and favourite artists.
 
 > **Status:** `1.0.0-alpha` — under active development. The current source configuration enables a friends-beta edition. This repository is not yet a turnkey public release.
 
@@ -27,7 +27,7 @@ Roll the Dice is a Windows desktop music-discovery app built with Electron. It h
 
 ## Platform and architecture
 
-Roll the Dice currently targets **Windows**. It is a local-first Electron application using plain JavaScript, HTML and CSS rather than a separate web frontend framework.
+Roll the Dice targets **Windows** and **x86-64 Linux**. It is a local-first Electron application using plain JavaScript, HTML and CSS rather than a separate web frontend framework.
 
 The application is divided into:
 
@@ -43,11 +43,29 @@ Application data is stored locally in Electron’s user-data directory. The frie
 
 ## Development
 
-The supplied application source lives in `app/`. Its `package.json` identifies the Electron entry point as `main.js` but does not currently declare a full dependency installation, test or build workflow.
+The application source lives in `app/`, with `main.js` as its Electron entry point. Install build dependencies with `npm ci` from the repository root.
 
 For development, use a compatible Electron runtime and launch the application from the `app/` directory. Do not assume that a standard Electron distribution will provide the protected-media capabilities of ECS.
 
-A reproducible development and release toolchain, automated tests and CI are planned release work. Consult the repository's build tooling once those files are added; do not use an unsigned generic Electron build as a substitute for an ECS release requiring protected playback.
+## Linux portable build (x86-64)
+
+On an x86-64 Linux host with Node.js 22.12 or newer, npm, `curl`, `unzip`, and `tar`, run:
+
+```sh
+npm ci
+npm run build:linux
+```
+
+The build downloads a pinned castLabs Electron for Content Security (ECS) runtime, checks its SHA-256, and writes `dist/Roll-the-Dice-<version>-linux-x64.tar.gz`. It does not use or modify the Windows runtime or build. For the current app version, extract and launch as your normal desktop user:
+
+```sh
+tar -xzf dist/Roll-the-Dice-1.0.0-alpha-linux-x64.tar.gz
+./Roll-the-Dice-1.0.0-alpha-linux-x64/roll-the-dice
+```
+
+Keep the executable beside the extracted runtime files. This is a portable archive, not a system installer. It requires a graphical Linux session and the usual Electron desktop libraries and Chromium sandbox support. The archive has not been validated for protected playback; providers may impose additional Widevine requirements.
+
+Run `node --test scripts/build-linux.test.cjs` to rebuild and check the archive and its packaged app files.
 
 ## Windows distribution and signing
 
